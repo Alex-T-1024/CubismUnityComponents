@@ -7,6 +7,7 @@
 
 
 using Live2D.Cubism.Core;
+using Live2D.Cubism.Utils;
 using UnityEngine;
 
 using Object = UnityEngine.Object;
@@ -19,6 +20,8 @@ namespace Live2D.Cubism.Framework.LookAt
     /// </summary>
     public sealed class CubismLookController : MonoBehaviour, ICubismUpdatable
     {
+        private Camera _mainCamera;
+
         /// <summary>
         /// Blend mode.
         /// </summary>
@@ -174,7 +177,9 @@ namespace Live2D.Cubism.Framework.LookAt
 
             // Update position.
             var position = LastPosition;
-            GoalPosition = transform.InverseTransformPoint(target.GetPosition()) - Center.localPosition;
+            //GoalPosition = transform.InverseTransformPoint(target.GetPosition()) - Center.localPosition;
+            GoalPosition = target.GetPosition() - Center.position;
+            GoalPosition = TransformUtil.WorldToCameraRelativeNormalizedPos(_mainCamera, GoalPosition, 0.8f);
 
 
             if (position != GoalPosition)
@@ -205,6 +210,8 @@ namespace Live2D.Cubism.Framework.LookAt
         /// </summary>
         private void Start()
         {
+            _mainCamera = Camera.main;
+
             // Default center if necessary.
             if (Center == null)
             {
